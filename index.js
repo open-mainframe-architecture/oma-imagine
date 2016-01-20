@@ -32,10 +32,10 @@ function scanBundleReleases(bundleDirectory, bundleNames) {
         var bundleName = path.basename(path.dirname(bundleHome));
         var bundleRelease = bundleReleases[bundleName] || (bundleReleases[bundleName] = {});
         var archiveVersions = bundleRelease[releaseIdentity] = {};
-        var metaObject = JSON.parse(jsonSource);
+        var metaObject = JSON.parse(jsonSource)._;
         for (var moduleName in metaObject) {
-          var matches = metaObject[moduleName].archive.match(/^(.*)\/(.*)$/);
-          archiveVersions[matches[1]] = matches[2];
+          var archiveVersion = metaObject[moduleName].archive;
+          archiveVersions[archiveVersion.name] = archiveVersion.version;
         }
         cb(null);
       })
