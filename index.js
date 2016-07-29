@@ -43,7 +43,7 @@ function scanBundleReleases(bundleDirectory, bundleNames) {
       const bundleRelease = bundleReleases[bundleName] || (bundleReleases[bundleName] = {});
       const archiveVersions = bundleRelease[releaseIdentity] = {};
       const metaObject = JSON.parse(jsonSource)._;
-      for (let moduleName in metaObject) {
+      for (const moduleName in metaObject) {
         const versionedArchive = metaObject[moduleName].archive;
         archiveVersions[versionedArchive.name] = versionedArchive.version;
       }
@@ -54,10 +54,10 @@ function scanBundleReleases(bundleDirectory, bundleNames) {
 
 function bestBundleReleases(bundleReleases) {
   const bestReleases = {};
-  for (let bundleName in bundleReleases) {
+  for (const bundleName in bundleReleases) {
     let bestReleaseIdentity = null;
     const releases = bundleReleases[bundleName]
-    for (let releaseIdentity in releases) {
+    for (const releaseIdentity in releases) {
       const thisRelease = releases[releaseIdentity];
       if (!bestReleaseIdentity || isBetterRelease(thisRelease, releases[bestReleaseIdentity])) {
         bestReleaseIdentity = releaseIdentity;
@@ -70,7 +70,7 @@ function bestBundleReleases(bundleReleases) {
 
 function isBetterRelease(newVersions, oldVersions) {
   let totalComparison = 0;
-  for (let archiveName in newVersions) {
+  for (const archiveName in newVersions) {
     const newVersion = newVersions[archiveName], oldVersion = oldVersions[archiveName];
     // if new or old version is undefined, continue with other names
     if (newVersion && oldVersion) {
@@ -92,10 +92,10 @@ function isBetterRelease(newVersions, oldVersions) {
 
 function bestArchiveVersions(bestReleases, bundleReleases) {
   const archives = {}
-  for (let bundleName in bestReleases) {
+  for (const bundleName in bestReleases) {
     const releaseIdentity = bestReleases[bundleName];
     const archiveVersions = bundleReleases[bundleName][releaseIdentity];
-    for (let archiveName in archiveVersions) {
+    for (const archiveName in archiveVersions) {
       const thisVersion = archiveVersions[archiveName];
       const existingVersion = archives[archiveName];
       if (!existingVersion) {
@@ -117,7 +117,7 @@ function bestImageModules(bundleDirectory, bestReleases) {
       .then(inputStream => util.readStreamText(inputStream))
       .then(jsonSource => {
         const metaObject = JSON.parse(jsonSource)._;
-        for (let moduleName in metaObject) {
+        for (const moduleName in metaObject) {
           if (moduleName) {
             if (modules[moduleName]) {
               const conflictingBundles = `${bundleName} & ${modules[moduleName].bundle}`;
@@ -135,13 +135,15 @@ function bestImageModules(bundleDirectory, bestReleases) {
 
 function metaModules(bestModules) {
   const modules = {};
-  for (let moduleName in bestModules) {
+  for (const moduleName in bestModules) {
     const meta = bestModules[moduleName];
     modules[moduleName] = {
       bundle: meta.bundle,
       ordinal: meta.ordinal,
       optional: meta.optional,
-      depends: meta.depends
+      depends: meta.depends,
+      requires: meta.requires,
+      provides: meta.provides
     };
   }
   return modules;
